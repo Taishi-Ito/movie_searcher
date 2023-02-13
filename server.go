@@ -2,6 +2,7 @@ package main
 
 import(
 	"movie_searcher/routes"
+	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	// "github.com/labstack/echo/v4/middleware"
 	"net/http"
@@ -10,6 +11,10 @@ import(
 )
 
 func init() {
+	err := godotenv.Load()
+	if err != {
+		logrus.Fatal("Error loading .env")
+	}
 	logrus.SetLevel(logrus.DebugLevel)
 	logrus.SetFormatter(&logrus.JSONFormatter{})
 }
