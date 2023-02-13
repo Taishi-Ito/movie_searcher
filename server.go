@@ -6,7 +6,13 @@ import(
 	// "github.com/labstack/echo/v4/middleware"
 	"net/http"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/sirupsen/logrus"
 )
+
+func init() {
+	logrus.SetLevel(logrus.DebugLevel)
+	logrus.SetFormatter(&logrus.JSONFormatter{})
+}
 
 func main() {
 	e := echo.New()
