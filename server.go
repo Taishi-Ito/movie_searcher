@@ -22,6 +22,7 @@ func init() {
 func main() {
 	e := echo.New()
 	e.Use(middleware.Logger())
+	e.Use(middleware.CORS())
 	routes.Init(e)
 	e.GET("/", hello)
 	e.Logger.Fatal(e.Start(":8081"))
