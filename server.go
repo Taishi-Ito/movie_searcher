@@ -12,7 +12,7 @@ import(
 
 func init() {
 	err := godotenv.Load()
-	if err != {
+	if err != nil {
 		logrus.Fatal("Error loading .env")
 	}
 	logrus.SetLevel(logrus.DebugLevel)
