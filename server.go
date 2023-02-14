@@ -4,8 +4,6 @@ import(
 	"movie_searcher/routes"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
-	// "github.com/labstack/echo/v4/middleware"
-	"net/http"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/sirupsen/logrus"
 )
@@ -24,10 +22,5 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.CORS())
 	routes.Init(e)
-	e.GET("/", hello)
 	e.Logger.Fatal(e.Start(":8081"))
-}
-
-func hello(c echo.Context) error {
-	return c.String(http.StatusOK, "Hello, World!!!!")
 }
