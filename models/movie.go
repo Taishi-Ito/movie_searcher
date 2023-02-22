@@ -14,4 +14,5 @@ type Movie struct {
 	PrimeReviewNum string `json: "prime_review_num"`
 	FilmLength string `json: "film_length"`
 	AverageVector string `json: "average_vector"`
+	CosineSimilarity float64
 }
