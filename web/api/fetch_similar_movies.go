@@ -26,7 +26,7 @@ func FetchSimilarMovies() echo.HandlerFunc {
 		// sentence-vector-generatorにリクエストを送信する
 		jsonStr := []byte(fmt.Sprintf(`{"text": "%s"}`, text))
 		req, err := http.NewRequest("POST",
-		"http://localhost:8000/convert",
+		"http://localhost:8000/generate",
 		bytes.NewBuffer([]byte(jsonStr)),
 		)
 		if err != nil {
