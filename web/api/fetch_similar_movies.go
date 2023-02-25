@@ -72,16 +72,16 @@ func FetchSimilarMovies() echo.HandlerFunc {
 
 			// 類似度順に並び替える
 			rankings = append(rankings, IdSimilarity{Id: movie.ID, Similarity: cosine_similarity})
-			if len(rankings) == 11 {
-				sort.Slice(rankings, func(i, j int) bool {return rankings[i].Similarity > rankings[j].Similarity})
-				rankings = rankings[:10]
-			}
 		}
 
 		// 類似度トップ10のデータを取得
+		sort.Slice(rankings, func(i, j int) bool {return rankings[i].Similarity > rankings[j].Similarity})
+		topMoviesID := make([]uint, 0)
+		for _, ranking := range rankings[:10] {
+            topMoviesID = append(topMoviesID, ranking.Id)
+        }
 		top_movies := []models.Movie{}
-		dbs.DB.Debug().Select([]string{"id", "title", "year",}).Where([]uint{rankings[0].Id, rankings[1].Id, rankings[2].Id, rankings[3].Id, rankings[4].Id, rankings[5].Id, rankings[6].Id, rankings[7].Id, rankings[8].Id, rankings[9].Id}).Find(&top_movies)
-
+		dbs.DB.Debug().Select([]string{"id", "title", "year",}).Where(topMoviesID).Find(&top_movies)
 
 		// 取得したデータを類似度順に並び替え
 		ordered_top_movies := []models.Movie{}
