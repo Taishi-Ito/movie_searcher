@@ -6,7 +6,7 @@ import(
 	"movie_searcher/models"
 	"movie_searcher/middlewares"
 	"movie_searcher/web/sentence_vector_generator"
-	"gonum.org/v1/gonum/mat"
+	"movie_searcher/web/utils/calculation"
 	"encoding/json"
 	"sort"
 )
@@ -32,14 +32,7 @@ func FetchSimilarMovies() echo.HandlerFunc {
 		for _, movie := range movies {
 			compared_vec := []float64{}
 			json.Unmarshal([]byte(movie.AverageVector), &compared_vec)
-			input_vec_dense := mat.NewVecDense(768, input_vec)
-			compared_vec_dense := mat.NewVecDense(768, compared_vec)
-			dot := mat.Dot(input_vec_dense, compared_vec_dense)
-			input_vec_norm := mat.Norm(input_vec_dense, 2)
-			compared_vec_norm := mat.Norm(compared_vec_dense, 2)
-			cosine_similarity := dot / (input_vec_norm * compared_vec_norm)
-
-			// 類似度順に並び替える
+			cosine_similarity := calculation.CalcCosineSimilarity(input_vec, compared_vec)
 			rankings = append(rankings, IdSimilarity{Id: movie.ID, Similarity: cosine_similarity})
 		}
 
