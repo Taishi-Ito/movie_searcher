@@ -5,7 +5,7 @@ import(
 	"github.com/valyala/fasthttp"
 	"movie_searcher/models"
 	"movie_searcher/middlewares"
-	"movie_searcher/web/sentence_vector_generator"
+	"movie_searcher/web/vender"
 	"movie_searcher/web/utils/calculation"
 	"encoding/json"
 	"sort"
@@ -16,7 +16,7 @@ func FetchSimilarMovies() echo.HandlerFunc {
 		text := c.QueryParam("text")
 
 		// sentence-vector-generatorにリクエストを送信する
-		input_vec := sentence_vector_generator.FetchSentenceVector(text)
+		input_vec := vender.FetchSentenceVector(text)
 
 		// DBからMovieの全データを取得する
 		dbs := c.Get("dbs").(*middlewares.DatabaseClient)
