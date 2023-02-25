@@ -5,49 +5,18 @@ import(
 	"github.com/valyala/fasthttp"
 	"movie_searcher/models"
 	"movie_searcher/middlewares"
-	"fmt"
+	"movie_searcher/web/sentence_vector_generator"
 	"gonum.org/v1/gonum/mat"
 	"encoding/json"
-	"net/http"
-	"bytes"
-	"github.com/sirupsen/logrus"
-	"io/ioutil"
 	"sort"
 )
-
-type Response struct {
-	EncodedText string  `json:"encoded_text"`
-}
 
 func FetchSimilarMovies() echo.HandlerFunc {
 	return func(c echo.Context) error {
 		text := c.QueryParam("text")
 
 		// sentence-vector-generatorにリクエストを送信する
-		jsonStr := []byte(fmt.Sprintf(`{"text": "%s"}`, text))
-		req, err := http.NewRequest("POST",
-		"http://localhost:8000/generate",
-		bytes.NewBuffer([]byte(jsonStr)),
-		)
-		if err != nil {
-			logrus.Fatal(err)
-		}
-		req.Header.Add("Content-Type", "application/json")
-		client := &http.Client{}
-		resp, err := client.Do(req)
-		if err != nil {
-			logrus.Fatal(err)
-		}
-		body, err := ioutil.ReadAll(resp.Body)
-		response := Response{}
-		err = json.Unmarshal(body, &response)
-		if err != nil {
-			logrus.Fatal(err)
-		}
-		input_vec := []float64{}
-		json.Unmarshal([]byte(response.EncodedText), &input_vec)
-		defer resp.Body.Close()
-
+		input_vec := sentence_vector_generator.FetchSentenceVector(text)
 
 		// DBからMovieの全データを取得する
 		dbs := c.Get("dbs").(*middlewares.DatabaseClient)
