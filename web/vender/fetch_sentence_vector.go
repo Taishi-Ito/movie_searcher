@@ -1,4 +1,4 @@
-package sentence_vector_generator
+package vender
 
 import(
 	"fmt"
