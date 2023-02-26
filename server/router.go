@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"movie_searcher/web/api"
+	"movie_searcher/controllers/api"
 	"github.com/labstack/echo/v4"
 )
 
