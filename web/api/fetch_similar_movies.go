@@ -13,10 +13,16 @@ import(
 
 func FetchSimilarMovies() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		text := c.QueryParam("text")
+		var request struct {
+			Text string `json:"text"`
+		}
+		err := c.Bind(&request)
+		if err != nil {
+			return err
+		}
 
 		// sentence-vector-generatorにリクエストを送信する
-		input_vec := vender.FetchSentenceVector(text)
+		input_vec := vender.FetchSentenceVector(request.Text)
 
 		// DBからMovieの全データを取得する
 		dbs := c.Get("dbs").(*middlewares.DatabaseClient)

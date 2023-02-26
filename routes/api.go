@@ -8,6 +8,6 @@ import (
 func Init(e *echo.Echo) {
 	g := e.Group("/api")
 	{
-		g.GET("/similar", api.FetchSimilarMovies())
+		g.POST("/similar", api.FetchSimilarMovies())
 	}
 }
