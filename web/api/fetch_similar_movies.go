@@ -21,7 +21,7 @@ func FetchSimilarMovies() echo.HandlerFunc {
 			return err
 		}
 
-		// sentence-vector-generatorにリクエストを送信する
+		// 入力文を文ベクトルに変換する
 		input_vec := vender.FetchSentenceVector(request.Text)
 
 		// DBからMovieの全データを取得する
