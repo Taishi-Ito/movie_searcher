@@ -1,7 +1,7 @@
 package main
 
 import(
-	"movie_searcher/routes"
+	"movie_searcher/server"
 	"movie_searcher/middlewares"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"

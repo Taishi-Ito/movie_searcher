@@ -1,4 +1,4 @@
-package calculation
+package math
 
 import(
 	"gonum.org/v1/gonum/mat"

@@ -3,12 +3,13 @@ package api
 import(
 	"github.com/labstack/echo/v4"
 	"github.com/valyala/fasthttp"
-	"movie_searcher/models"
+	"movie_searcher/models/math"
+	"movie_searcher/models/movie"
+	"movie_searcher/models/nlp"
 	"movie_searcher/middlewares"
-	"movie_searcher/web/vender"
-	"movie_searcher/web/utils/calculation"
 	"encoding/json"
 	"sort"
+	"fmt"
 )
 
 func FetchSimilarMovies() echo.HandlerFunc {
@@ -22,11 +23,11 @@ func FetchSimilarMovies() echo.HandlerFunc {
 		}
 
 		// 入力文を文ベクトルに変換する
-		input_vec := vender.FetchSentenceVector(request.Text)
+		input_vec := nlp.FetchSentenceVector(request.Text)
 
 		// DBからMovieの全データを取得する
 		dbs := c.Get("dbs").(*middlewares.DatabaseClient)
-		movies := []models.Movie{}
+		movies := []movie.Movie{}
 		dbs.DB.Debug().Select([]string{"id","average_vector"}).Find(&movies)
 
 		// ベクトルの類似度を計算する
@@ -38,7 +39,7 @@ func FetchSimilarMovies() echo.HandlerFunc {
 		for _, movie := range movies {
 			compared_vec := []float64{}
 			json.Unmarshal([]byte(movie.AverageVector), &compared_vec)
-			cosine_similarity := calculation.CalcCosineSimilarity(input_vec, compared_vec)
+			cosine_similarity := math.CalcCosineSimilarity(input_vec, compared_vec)
 			rankings = append(rankings, IdSimilarity{Id: movie.ID, Similarity: cosine_similarity})
 		}
 
@@ -48,11 +49,11 @@ func FetchSimilarMovies() echo.HandlerFunc {
 		for _, ranking := range rankings[:10] {
             topMoviesID = append(topMoviesID, ranking.Id)
         }
-		top_movies := []models.Movie{}
+		top_movies := []movie.Movie{}
 		dbs.DB.Debug().Select([]string{"id", "title", "year",}).Where(topMoviesID).Find(&top_movies)
 
 		// 取得したデータを類似度順に並び替え
-		ordered_top_movies := []models.Movie{}
+		ordered_top_movies := []movie.Movie{}
 		for _, ranking := range rankings {
 			for _, top_movie := range top_movies {
 				if ranking.Id == top_movie.ID {
@@ -64,5 +65,16 @@ func FetchSimilarMovies() echo.HandlerFunc {
 		}
 
 		return c.JSON(fasthttp.StatusOK, ordered_top_movies)
+	}
+}
+
+func FetchMovieDetail() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		id := c.Param("id")
+		dbs := c.Get("dbs").(*middlewares.DatabaseClient)
+		movie := movie.Movie{}
+		dbs.DB.Debug().Select([]string{"title", "year", "summary", "imdb_rank", "prime_rating", "imdb_rating", "average_rating", "prime_id", "prime_review_num", "film_length"}).Where("id = ?", id).First(&movie)
+		fmt.Println(movie)
+		return c.JSON(fasthttp.StatusOK, movie)
 	}
 }
