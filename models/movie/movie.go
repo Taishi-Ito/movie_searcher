@@ -11,8 +11,8 @@ type Movie struct {
 	ImdbRating float32 `json: "imdb_rating"`
 	AverageRating float32 `json: "average_rating"`
 	PrimeId string `json: "prime_id"`
-	PrimeReviewNum string `json: "prime_review_num"`
-	FilmLength string `json: "film_length"`
+	PrimeReviewNum uint `json: "prime_review_num"`
+	FilmLength uint `json: "film_length"`
 	AverageVector string `json: "average_vector"`
 	CosineSimilarity float64
 }
