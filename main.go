@@ -25,7 +25,7 @@ func main() {
 	env := os.Getenv("ENV")
     if env == "prod" {
         e.AutoTLSManager.HostPolicy = autocert.HostWhitelist(os.Getenv("URL"))
-        e.AutoTLSManager.Cache = autocert.DirCache("/var/www/.cache")
+        e.AutoTLSManager.Cache = autocert.DirCache("/etc/certs")
         e.Pre(middleware.HTTPSWWWRedirect())
     }
 	// Middleware
