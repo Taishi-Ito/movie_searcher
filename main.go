@@ -35,12 +35,19 @@ func main() {
 
 	// Routes
 	routes.Init(e)
+	// switch env {
+    // case "prod":
+    //     e.Logger.Fatal(e.StartAutoTLS(":443"))
+    // case "dev":
+    //     defaultAddr := ":80"
+    //     e.Logger.Fatal(e.Start(defaultAddr))
+    // default:
+    //     defaultAddr := ":8081"
+    //     e.Logger.Fatal(e.Start(defaultAddr))
+    // }
 	switch env {
     case "prod":
-        e.Logger.Fatal(e.StartAutoTLS(":443"))
-    case "dev":
-        defaultAddr := ":80"
-        e.Logger.Fatal(e.Start(defaultAddr))
+        e.Logger.Fatal(e.StartAutoTLS(":8081"))
     default:
         defaultAddr := ":8081"
         e.Logger.Fatal(e.Start(defaultAddr))
