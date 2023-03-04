@@ -47,7 +47,7 @@ func main() {
     // }
 	switch env {
     case "prod":
-        e.Logger.Fatal(e.StartAutoTLS(":8081"))
+        e.Logger.Fatal(e.StartAutoTLS(":443"))
     default:
         defaultAddr := ":8081"
         e.Logger.Fatal(e.Start(defaultAddr))
