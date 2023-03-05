@@ -9,7 +9,15 @@ import(
 	"movie_searcher/middlewares"
 	"encoding/json"
 	"sort"
+	"sync"
 )
+
+func getAllMovies(dbs *middlewares.DatabaseClient, wg *sync.WaitGroup, ch chan []movie.Movie) {
+	defer wg.Done()
+	movies := []movie.Movie{}
+	dbs.DB.Debug().Select([]string{"id","average_vector"}).Find(&movies)
+	ch <- movies
+}
 
 func FetchSimilarMovies() echo.HandlerFunc {
 	return func(c echo.Context) error {
@@ -21,13 +29,21 @@ func FetchSimilarMovies() echo.HandlerFunc {
 			return err
 		}
 
+		var wg sync.WaitGroup
+		wg.Add(2)
+
 		// 入力文を文ベクトルに変換する
-		input_vec := nlp.FetchSentenceVector(request.Text)
+		ch_vec := make(chan []float64)
+		go nlp.FetchSentenceVector(request.Text, &wg, ch_vec)
+		input_vec := <- ch_vec
 
 		// DBからMovieの全データを取得する
+		ch_db := make(chan []movie.Movie)
 		dbs := c.Get("dbs").(*middlewares.DatabaseClient)
-		movies := []movie.Movie{}
-		dbs.DB.Debug().Select([]string{"id","average_vector"}).Find(&movies)
+		go getAllMovies(dbs, &wg, ch_db)
+		movies := <- ch_db
+
+		wg.Wait()
 
 		// ベクトルの類似度を計算する
 		type IdSimilarity struct {

@@ -7,13 +7,15 @@ import(
 	"bytes"
 	"github.com/sirupsen/logrus"
 	"io/ioutil"
+	"sync"
 )
 
 type Response struct {
 	EncodedText string  `json:"encoded_text"`
 }
 
-func FetchSentenceVector(text string) []float64 {
+func FetchSentenceVector(text string, wg *sync.WaitGroup, ch chan []float64) {
+	defer wg.Done()
 	jsonStr := []byte(fmt.Sprintf(`{"text": "%s"}`, text))
 	req, err := http.NewRequest("POST",
 	"http://localhost:8000/generate",
@@ -37,5 +39,5 @@ func FetchSentenceVector(text string) []float64 {
 	input_vec := []float64{}
 	json.Unmarshal([]byte(response.EncodedText), &input_vec)
 	defer resp.Body.Close()
-	return input_vec
+	ch <- input_vec
 }
