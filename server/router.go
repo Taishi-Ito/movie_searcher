@@ -1,8 +1,8 @@
 package routes
 
 import (
-	"movie_searcher/controllers/api"
 	"github.com/labstack/echo/v4"
+	"movie_searcher/controllers/api"
 )
 
 func Init(e *echo.Echo) {

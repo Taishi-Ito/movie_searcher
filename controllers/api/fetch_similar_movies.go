@@ -1,13 +1,13 @@
 package api
 
-import(
+import (
+	"encoding/json"
 	"github.com/labstack/echo/v4"
 	"github.com/valyala/fasthttp"
+	"movie_searcher/middlewares"
 	"movie_searcher/models/math"
 	"movie_searcher/models/movie"
 	"movie_searcher/models/nlp"
-	"movie_searcher/middlewares"
-	"encoding/json"
 	"sort"
 	"sync"
 )
@@ -15,7 +15,7 @@ import(
 func getAllMovies(dbs *middlewares.DatabaseClient, wg *sync.WaitGroup, ch chan []movie.Movie) {
 	defer wg.Done()
 	movies := []movie.Movie{}
-	dbs.DB.Debug().Select([]string{"id","average_vector"}).Find(&movies)
+	dbs.DB.Debug().Select([]string{"id", "average_vector"}).Find(&movies)
 	ch <- movies
 }
 
@@ -35,19 +35,19 @@ func FetchSimilarMovies() echo.HandlerFunc {
 		// 入力文を文ベクトルに変換する
 		ch_vec := make(chan []float64)
 		go nlp.FetchSentenceVector(request.Text, &wg, ch_vec)
-		input_vec := <- ch_vec
+		input_vec := <-ch_vec
 
 		// DBからMovieの全データを取得する
 		ch_db := make(chan []movie.Movie)
 		dbs := c.Get("dbs").(*middlewares.DatabaseClient)
 		go getAllMovies(dbs, &wg, ch_db)
-		movies := <- ch_db
+		movies := <-ch_db
 
 		wg.Wait()
 
 		// ベクトルの類似度を計算する
 		type IdSimilarity struct {
-			Id uint
+			Id         uint
 			Similarity float64
 		}
 		rankings := []IdSimilarity{}
@@ -59,13 +59,13 @@ func FetchSimilarMovies() echo.HandlerFunc {
 		}
 
 		// 類似度トップ10のデータを取得
-		sort.Slice(rankings, func(i, j int) bool {return rankings[i].Similarity > rankings[j].Similarity})
-		topMoviesID := make([]uint, 0)
+		sort.Slice(rankings, func(i, j int) bool { return rankings[i].Similarity > rankings[j].Similarity })
+		top_movies_ids := make([]uint, 0)
 		for _, ranking := range rankings[:10] {
-            topMoviesID = append(topMoviesID, ranking.Id)
-        }
+			top_movies_ids = append(top_movies_ids, ranking.Id)
+		}
 		top_movies := []movie.Movie{}
-		dbs.DB.Debug().Select([]string{"id", "title", "year",}).Where(topMoviesID).Find(&top_movies)
+		dbs.DB.Debug().Select([]string{"id", "title", "year"}).Where(top_movies_ids).Find(&top_movies)
 
 		// 取得したデータを類似度順に並び替え
 		ordered_top_movies := []movie.Movie{}

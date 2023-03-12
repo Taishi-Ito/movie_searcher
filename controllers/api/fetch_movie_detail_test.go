@@ -1,23 +1,23 @@
 package api
 
 import (
+	"encoding/json"
+	"github.com/joho/godotenv"
+	"github.com/labstack/echo/v4"
+	"movie_searcher/databases"
+	"movie_searcher/middlewares"
+	"movie_searcher/models/movie"
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"movie_searcher/middlewares"
-	"github.com/labstack/echo/v4"
-	"encoding/json"
-	"movie_searcher/models/movie"
-	"github.com/joho/godotenv"
-	"movie_searcher/databases"
 )
 
 func TestFetchMovieDetail(t *testing.T) {
 	godotenv.Load()
 	e := echo.New()
 	req := httptest.NewRequest(http.MethodGet, "/api/show/:id", nil)
-    rec := httptest.NewRecorder()
-    c := e.NewContext(req, rec)
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
 	c.SetParamNames("id")
 	c.SetParamValues("119")
 
@@ -26,7 +26,6 @@ func TestFetchMovieDetail(t *testing.T) {
 	defer d.DB.Close()
 	d.DB.LogMode(true)
 	c.Set("dbs", &d)
-
 
 	response := FetchMovieDetail()(c)
 	if response != nil {

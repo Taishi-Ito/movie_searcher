@@ -2,15 +2,15 @@ package api
 
 import (
 	"bytes"
+	"encoding/json"
+	"github.com/joho/godotenv"
+	"github.com/labstack/echo/v4"
+	"movie_searcher/databases"
+	"movie_searcher/middlewares"
+	"movie_searcher/models/movie"
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"movie_searcher/middlewares"
-	"github.com/labstack/echo/v4"
-	"encoding/json"
-	"movie_searcher/models/movie"
-	"github.com/joho/godotenv"
-	"movie_searcher/databases"
 )
 
 func BenchmarkFetchSimilarMovies(b *testing.B) {
@@ -22,7 +22,6 @@ func BenchmarkFetchSimilarMovies(b *testing.B) {
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 
-
 	session, _ := database.Connect()
 	d := middlewares.DatabaseClient{DB: session}
 	defer d.DB.Close()
@@ -32,7 +31,6 @@ func BenchmarkFetchSimilarMovies(b *testing.B) {
 	b.ResetTimer()
 	FetchSimilarMovies()(c)
 	b.StopTimer()
-
 
 	ordered_top_movies := []movie.Movie{}
 	err := json.Unmarshal(rec.Body.Bytes(), &ordered_top_movies)

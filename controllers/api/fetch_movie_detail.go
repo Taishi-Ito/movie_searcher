@@ -1,10 +1,10 @@
 package api
 
-import(
+import (
 	"github.com/labstack/echo/v4"
 	"github.com/valyala/fasthttp"
-	"movie_searcher/models/movie"
 	"movie_searcher/middlewares"
+	"movie_searcher/models/movie"
 )
 
 func FetchMovieDetail() echo.HandlerFunc {

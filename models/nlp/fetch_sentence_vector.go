@@ -1,25 +1,25 @@
 package nlp
 
-import(
-	"fmt"
-	"encoding/json"
-	"net/http"
+import (
 	"bytes"
+	"encoding/json"
+	"fmt"
 	"github.com/sirupsen/logrus"
 	"io/ioutil"
+	"net/http"
 	"sync"
 )
 
 type Response struct {
-	EncodedText string  `json:"encoded_text"`
+	EncodedText string `json:"encoded_text"`
 }
 
 func FetchSentenceVector(text string, wg *sync.WaitGroup, ch chan []float64) {
 	defer wg.Done()
 	jsonStr := []byte(fmt.Sprintf(`{"text": "%s"}`, text))
 	req, err := http.NewRequest("POST",
-	"http://localhost:8000/generate",
-	bytes.NewBuffer([]byte(jsonStr)),
+		"http://localhost:8000/generate",
+		bytes.NewBuffer([]byte(jsonStr)),
 	)
 	if err != nil {
 		logrus.Fatal(err)

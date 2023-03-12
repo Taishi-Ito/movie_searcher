@@ -1,9 +1,9 @@
 package middlewares
 
 import (
-	"movie_searcher/databases"
 	"github.com/jinzhu/gorm"
 	"github.com/labstack/echo/v4"
+	"movie_searcher/databases"
 )
 
 type DatabaseClient struct {

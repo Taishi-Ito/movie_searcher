@@ -1,6 +1,6 @@
 package math
 
-import(
+import (
 	"gonum.org/v1/gonum/mat"
 )
 
